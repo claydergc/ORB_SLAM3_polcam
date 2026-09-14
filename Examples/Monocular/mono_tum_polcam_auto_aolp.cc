@@ -162,7 +162,8 @@ inline double clampVal(double x, double lo, double hi) {
 //     return (1.0 - g) * AoLP_mean + g * AoLP_3stddev;
 // }
 //
-double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = 60.0*M_PI/180.0) {
+// double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = 60.0*M_PI/180.0) {
+double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max) {
 // double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = M_PI / 2.0) {
 // double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = M_PI) {
     double v = clampVal(std::abs(AoLP_mean) / AoLP_max, 0.0, 1.0);
@@ -218,8 +219,8 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM01, true);
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, true);
-    // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, false);
+    // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, true);
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, false);
     float imageScale = SLAM.GetImageScale();
 
     // Vector for tracking time statistics
@@ -262,6 +263,9 @@ int main(int argc, char **argv)
     double theta_3std_left;
     double theta_3std_right;
 
+    double r = std::stof(argv[4]);
+    double phi_circmax = std::stof(argv[5]) * M_PI/180.0;
+
     const uint FPS = 20;
     // const uint T_STEP = (uint)(1.0) * FPS ;
     const uint T_STEP = 0.5 * FPS ;
@@ -270,7 +274,9 @@ int main(int argc, char **argv)
     // const double THETA_SHIFT_MIN = 3*M_PI/180.0; //degrees
     // const double DOLP_MIN = 0.21;
     // const double DOLP_MIN = 0.22; works for 0835
-    const double DOLP_MIN = 0.22;
+    // const double DOLP_MIN = 0.22;
+
+    double DOLP_MIN = std::stof(argv[6]);
     // const double DOLP_MIN = 0.25; works for 0821
     // const double DOLP_MIN = 0.27;
     const double THETA_MAX_DIFF = 20.0*M_PI/180.0;
@@ -313,7 +319,8 @@ int main(int argc, char **argv)
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.3);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.4);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.7);
-                    theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.5); //all the sequences was working with this value and the exponential function
+                    theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, r, phi_circmax);
+                    // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.5); //all the sequences was working with this value and the exponential function
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 1.0);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 1.5);
                     // theta0_curr_aux = 90.0*M_PI/180.0;
@@ -336,7 +343,7 @@ int main(int argc, char **argv)
                 // std::cout<<"Smooth transition"<<std::endl;
             }
 
-            // std::cout<<"dolp_mean: "<<dolp_mean<<" aolp_mean: "<<aolp_mean_curr * 180.0 / M_PI<<" theta_3std_right: "<<theta_3std_right * 180.0 / M_PI<<" theta0_prev: "<<theta0_prev * 180.0 / M_PI<<" theta0: "<<theta0_curr_aux * 180.0 / M_PI<<" theta1: "<<theta1_curr_aux * 180.0 / M_PI<<std::endl;
+            std::cout<<"dolp_mean: "<<dolp_mean<<" aolp_mean: "<<aolp_mean_curr * 180.0 / M_PI<<" theta_3std_right: "<<theta_3std_right * 180.0 / M_PI<<" theta0_prev: "<<theta0_prev * 180.0 / M_PI<<" theta0: "<<theta0_curr_aux * 180.0 / M_PI<<" theta1: "<<theta1_curr_aux * 180.0 / M_PI<<std::endl;
 
             theta0_curr = theta0_curr_aux;
             theta1_curr = theta1_curr_aux;
@@ -454,9 +461,9 @@ int main(int argc, char **argv)
     //SLAM.SaveTrajectoryTUM("KeyFrameTrajectory.txt");
 
 
-    SLAM.SaveKeyFrameTrajectoryTUM(string(argv[4]));
-    SaveTrajectoryForAllFramesClayder(string(argv[5]), trajectory);
-    SaveKeypointsForAllFramesClayder(string(argv[6]), SLAM.mpTracker->matchedKeypointsPerFrame, SLAM.mpTracker->isNewKeyFrameVector);
+    SLAM.SaveKeyFrameTrajectoryTUM(string(argv[7]));
+    SaveTrajectoryForAllFramesClayder(string(argv[8]), trajectory);
+    SaveKeypointsForAllFramesClayder(string(argv[9]), SLAM.mpTracker->matchedKeypointsPerFrame, SLAM.mpTracker->isNewKeyFrameVector);
 
     // SLAM.SaveKeyFrameTrajectoryTUM(string(argv[8]));
     // SaveTrajectoryForAllFramesClayder(string(argv[9]), trajectory);
