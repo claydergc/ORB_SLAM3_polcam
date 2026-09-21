@@ -5,22 +5,28 @@ executable = "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/mono_tum_
 # executable = "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/mono_tum_polcam3"
 vocabulary = "/home/ros-noetic/src/ORB_SLAM3_polcam/Vocabulary/ORBvoc.txt"
 settings = (
-    "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_1224x1024.yaml"
+    # "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_1224x1024.yaml"
+    "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_606x507.yaml"
     # "/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_1224x1024_2.yaml"
 )
 
 base_path = "/home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/"
 
+# sessions = ["20260128/0830/", "20260128/0835/", "20260803/0821/", "20260803/0827/", "20260803/0830/", "20260803/0832/", "20260803/0836/", "20260803/0837/", "20260803/0841/", "20260803/0849/"]
+# sessions = ["20260128/0830/", "20260803/0830/", "20260803/0832/"]
+sessions = ["20260128/0830/"]
 # sessions = ["20260803/0821/", "20260803/0827/", "20260803/0836/", "20260803/0837/"]
 # sessions = ["20260803/0821/", "20260803/0827/"]
 # sessions = ["20260803/0830/", "20260803/0832/"]
 # sessions = ["20260803/0841/", "20260803/0849/"]
-sessions = ["20260803/0841/"]
+# sessions = ["20260803/0841/"]
 # sessions = ["20260803/0830/", "20260803/0832/", "20260803/0841/", "20260803/0849/"]
 # sessions = ["20260803/0836/", "20260803/0837/"]
 #sessions = ["20260128/0830/", "20260128/0835/"]
 
-resultsBaseFolder = "/home/ros-noetic/DATA/ClayderEvaluation/orbslam3_polcam_tmp_results/"
+# resultsBaseFolder = "/home/ros-noetic/DATA/ClayderEvaluation/orbslam3_polcam_tmp_results/"
+# resultsBaseFolder = "/home/ros-noetic/DATA/ClayderEvaluation4ICRA2027_iniThFAST10_minThFAST/"
+resultsBaseFolder = "/home/ros-noetic/DATA/ClayderEvaluation4ICRA2027_606x507/"
 
 # All combinations of polarized camera images (I0, I45, I90, I135)
 # polarization_angles = ["I", "I0", "I45", "I90", "I135"]
@@ -31,6 +37,7 @@ max_retries = 5  # Maximum number of retries per iteration
 iterations_per_session = 10
 
 combo_folder_name = "auto_Itheta0Itheta1_1224x1024"
+# combo_folder_name = "auto_Itheta1Itheta0_1224x1024"
 
 total_runs = len(sessions) * iterations_per_session
 
@@ -45,8 +52,9 @@ for session in sessions:
     time = path_parts[-1]  # 0836
 
     # Create parent folder name: first letter of location + date + time
-    location_initial = location[0].lower()  # 'k' from KelvinGrove
-    parent_folder_name = f"{location_initial}_{date}_{time}_3pxKptsOverlap_auto_aolp"
+    #location_initial = location[0].lower()  # 'k' from KelvinGrove
+    location_initial = "KG"  # 'k' from KelvinGrove
+    parent_folder_name = f"{location_initial}_{date}_{time}"
     resultsFolder = os.path.join(resultsBaseFolder, parent_folder_name)
 
     # Create the parent directory if it doesn't exist
@@ -93,6 +101,9 @@ for session in sessions:
                 vocabulary,
                 settings,
                 imgsPolcam,
+                '0.55',
+                '60.0',
+                '0.22',
                 keyFramesTrajectoryFile,  # keyframes trajectory file
                 framesTrajectoryFile,  # frames trajectory file
                 framesKeyPointsFile,

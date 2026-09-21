@@ -27,29 +27,15 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/ros-noetic/Pangolin-0.9.2/build
 # FrameTrajectory.txt \
 # FrameKeypointsNumber.txt
 
-# /home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/mono_tum_polcam_auto_aolp  \
-# /home/ros-noetic/src/ORB_SLAM3_polcam/Vocabulary/ORBvoc.txt \
-# /home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_1224x1024.yaml \
-# /home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/20260803/0837/polcam \
-# 0.55 \
-# 60.0 \
-# 0.22 \
-# KeyFrameTrajectory.txt \
-# FrameTrajectory.txt \
-# FrameKeypointsNumber.txt
-
-
-/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/mono_tum_polcam_auto_aolp  \
+/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/mono_tum_polcam_auto_aolp_vis  \
 /home/ros-noetic/src/ORB_SLAM3_polcam/Vocabulary/ORBvoc.txt \
-/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_606x507.yaml \
-/home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/20260803/0830/polcam \
-0.55 \
+/home/ros-noetic/src/ORB_SLAM3_polcam/Examples/Monocular/TRIO50S_1224x1024.yaml \
+/home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/20260803/0832/polcam \
+0.5 \
 60.0 \
-0.22 \
 KeyFrameTrajectory.txt \
 FrameTrajectory.txt \
 FrameKeypointsNumber.txt
-
 
 # /home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/20260128/0830/polcam \
 # /home/ros-noetic/DATA/datasets/Polcam02/KelvinGrove/20260128/0835/polcam \

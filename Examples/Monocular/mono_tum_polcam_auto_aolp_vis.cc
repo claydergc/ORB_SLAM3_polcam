@@ -100,7 +100,7 @@ void SaveTrajectoryForAllFramesClayder(const string &filename, std::vector<PoseS
     f.close();
 }
 
-void SaveKeypointsForAllFramesClayder(const string &filename, std::vector<std::pair<double, uint16_t>> matchedKeypointsPerFrame)
+void SaveKeypointsForAllFramesClayder(const string &filename, std::vector<std::pair<double, uint16_t>> matchedKeypointsPerFrame, std::vector<std::pair<double, uint8_t>> isNewKeyFrameVector)
 {
     cout << endl << "Saving Clayder keypoints trajectory to " << filename << " ..." << endl;
 
@@ -111,58 +111,33 @@ void SaveKeypointsForAllFramesClayder(const string &filename, std::vector<std::p
 
     // CSV header
     // f << "ts (ns),tx (m),ty (m),tz (m),qx,qy,qz,qw\n";
+    //
+    std::cout<<matchedKeypointsPerFrame.size()<<' '<<isNewKeyFrameVector.size()<<std::endl;
 
     for (uint32_t i = 0; i < matchedKeypointsPerFrame.size(); i++)
     {
         double t = matchedKeypointsPerFrame[i].first;
+        double t2 = isNewKeyFrameVector[i+1].first;
+
+        // std::cout<<t<<' '<<t2<<std::endl;
+
         uint16_t numKeypointsPerFrame = matchedKeypointsPerFrame[i].second;
+        uint8_t isNewKeyFrame = isNewKeyFrameVector[i+1].second;
         long long ts_ns = static_cast<long long>(std::round(t * 1e9));
+        // long long ts_ns2 = static_cast<long long>(std::round(t2 * 1e9));
+
+        // std::cout<<ts_ns<<' '<<ts_ns2<<std::endl;
+
+        // if(ts_ns==ts_ns2) {
 
         f << std::fixed << std::setprecision(9) << ts_ns << ','
-          << numKeypointsPerFrame << '\n';
+        << numKeypointsPerFrame
+        << ',' << (uint16_t)(isNewKeyFrame) << '\n';
+        // }
     }
 
     f.close();
 }
-
-// void SaveKeypointsForAllFramesClayder(const string &filename, std::vector<std::pair<double, uint16_t>> matchedKeypointsPerFrame, std::vector<std::pair<double, uint8_t>> isNewKeyFrameVector)
-// {
-//     cout << endl << "Saving Clayder keypoints trajectory to " << filename << " ..." << endl;
-
-//     // Transform all keyframes so that the first keyframe is at the origin.
-//     // After a loop closure the first keyframe might not be at the origin.
-//     std::ofstream f(filename.c_str());
-//     f.imbue(std::locale::classic());
-
-//     // CSV header
-//     // f << "ts (ns),tx (m),ty (m),tz (m),qx,qy,qz,qw\n";
-//     //
-//     std::cout<<matchedKeypointsPerFrame.size()<<' '<<isNewKeyFrameVector.size()<<std::endl;
-
-//     for (uint32_t i = 0; i < matchedKeypointsPerFrame.size(); i++)
-//     {
-//         double t = matchedKeypointsPerFrame[i].first;
-//         double t2 = isNewKeyFrameVector[i+1].first;
-
-//         // std::cout<<t<<' '<<t2<<std::endl;
-
-//         uint16_t numKeypointsPerFrame = matchedKeypointsPerFrame[i].second;
-//         uint8_t isNewKeyFrame = isNewKeyFrameVector[i+1].second;
-//         long long ts_ns = static_cast<long long>(std::round(t * 1e9));
-//         // long long ts_ns2 = static_cast<long long>(std::round(t2 * 1e9));
-
-//         // std::cout<<ts_ns<<' '<<ts_ns2<<std::endl;
-
-//         // if(ts_ns==ts_ns2) {
-
-//         f << std::fixed << std::setprecision(9) << ts_ns << ','
-//         << numKeypointsPerFrame
-//         << ',' << (uint16_t)(isNewKeyFrame) << '\n';
-//         // }
-//     }
-
-//     f.close();
-// }
 
 // double computeWeight(double DoLP_mean, double DoLP_min = 0.26, double DoLP_max = 0.38) {
 // double computeWeight(double DoLP_mean, double DoLP_min = 0.25, double DoLP_max = 0.385) {
@@ -187,8 +162,7 @@ inline double clampVal(double x, double lo, double hi) {
 //     return (1.0 - g) * AoLP_mean + g * AoLP_3stddev;
 // }
 //
-// double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = 60.0*M_PI/180.0) {
-double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max) {
+double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = 60.0*M_PI/180.0) {
 // double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = M_PI / 2.0) {
 // double f(double AoLP_mean, double AoLP_3stddev, double p, double AoLP_max = M_PI) {
     double v = clampVal(std::abs(AoLP_mean) / AoLP_max, 0.0, 1.0);
@@ -299,13 +273,10 @@ int main(int argc, char **argv)
     // const double THETA_SHIFT_MIN = 3*M_PI/180.0; //degrees
     // const double DOLP_MIN = 0.21;
     // const double DOLP_MIN = 0.22; works for 0835
-    // const double DOLP_MIN = 0.22;
-
-    double DOLP_MIN = std::stof(argv[6]);
+    const double DOLP_MIN = 0.22;
     // const double DOLP_MIN = 0.25; works for 0821
     // const double DOLP_MIN = 0.27;
-    // const double THETA_MAX_DIFF = 20.0*M_PI/180.0; //default
-    const double THETA_MAX_DIFF = 10.0*M_PI/180.0; //default
+    const double THETA_MAX_DIFF = 20.0*M_PI/180.0;
     const double I_ANGLE_VALUE = 60.0*M_PI/180.0;
 
 
@@ -366,7 +337,7 @@ int main(int argc, char **argv)
             // if(ni!=0 && (std::abs(theta0_curr_aux-theta0_prev)>20.0*M_PI/180.0 && std::abs((theta0_curr_aux+M_PI)-theta0_prev)>20.0*M_PI/180.0) ) {
             if( ni!=0 && ( std::abs(theta0_curr_aux-theta0_prev)>THETA_MAX_DIFF && std::abs((theta0_curr_aux+M_PI)-theta0_prev)>THETA_MAX_DIFF ) ) {
                 theta0_curr_aux = computeSmoothAngleTransition(theta0_prev, theta0_curr_aux, THETA_MAX_DIFF);
-                // std::cout<<"Smooth transition"<<std::endl;
+                std::cout<<"Smooth transition"<<std::endl;
             }
 
             std::cout<<"dolp_mean: "<<dolp_mean<<" aolp_mean: "<<aolp_mean_curr * 180.0 / M_PI<<" theta_3std_right: "<<theta_3std_right * 180.0 / M_PI<<" theta0_prev: "<<theta0_prev * 180.0 / M_PI<<" theta0: "<<theta0_curr_aux * 180.0 / M_PI<<" theta1: "<<theta1_curr_aux * 180.0 / M_PI<<std::endl;
@@ -419,11 +390,7 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        cv::resize(imCam0, imCam0, cv::Size(606, 507), cv::INTER_AREA);
-        cv::resize(imCam1, imCam1, cv::Size(606, 507), cv::INTER_AREA);
-
         Sophus::SE3f Tcw = SLAM.TrackMonocularPolcam(imCam0,imCam1,tframe);
-        // Sophus::SE3f Tcw = SLAM.TrackMonocularPolcam(imCam1,imCam0,tframe);
         // Sophus::SE3f Tcw = SLAM.TrackMonocular(imCam0,tframe);
         Sophus::SE3f Twc = Tcw.inverse();
 
@@ -491,10 +458,9 @@ int main(int argc, char **argv)
     //SLAM.SaveTrajectoryTUM("KeyFrameTrajectory.txt");
 
 
-    SLAM.SaveKeyFrameTrajectoryTUM(string(argv[7]));
-    SaveTrajectoryForAllFramesClayder(string(argv[8]), trajectory);
-    // SaveKeypointsForAllFramesClayder(string(argv[9]), SLAM.mpTracker->matchedKeypointsPerFrame, SLAM.mpTracker->isNewKeyFrameVector);
-    SaveKeypointsForAllFramesClayder(string(argv[9]), SLAM.mpFrameDrawer->matchedKeypointsPerFrame);
+    SLAM.SaveKeyFrameTrajectoryTUM(string(argv[6]));
+    SaveTrajectoryForAllFramesClayder(string(argv[7]), trajectory);
+    SaveKeypointsForAllFramesClayder(string(argv[8]), SLAM.mpTracker->matchedKeypointsPerFrame, SLAM.mpTracker->isNewKeyFrameVector);
 
     // SLAM.SaveKeyFrameTrajectoryTUM(string(argv[8]));
     // SaveTrajectoryForAllFramesClayder(string(argv[9]), trajectory);

@@ -53,6 +53,7 @@ public:
   bool both;
   vector<bool> mvbMap, mvbVO;
   uint32_t N_keys, N_keys_Cam0, N_keys_Cam1;
+  std::vector<std::pair<double, uint16_t>> matchedKeypointsPerFrame;
 
 protected:
   void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);

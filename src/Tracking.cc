@@ -3086,7 +3086,7 @@ bool Tracking::TrackWithMotionModel()
     int nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR); //Copies points from last frame that matches in the new current frame
     //int nmatchesPolcam = matcher.SearchByProjectionPolcam(mCurrentFrame,mLastFrame,th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR); //STILL WITH ERRORS!
 
-    matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, nmatches));
+    // matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, nmatches));
     //n_mappoints = 0;
 
     //for(int i=0;i<mCurrentFrame.mvpMapPoints.size();++i)

@@ -54,8 +54,8 @@ Camera.height: 1024
 #ORBextractor.nFeatures: 280 #here both fails
 #ORBextractor.nFeatures: 310
 #ORBextractor.nFeatures: 1000 #default
-ORBextractor.nFeatures: 1200 #Works for KG
-# ORBextractor.nFeatures: 1400
+# ORBextractor.nFeatures: 1200 #Works for KG
+ORBextractor.nFeatures: 1400
 #ORBextractor.nFeatures: 1600
 # ORBextractor.nFeatures: 1400
 # ORBextractor.nFeatures: 1800
@@ -82,10 +82,13 @@ ORBextractor.nLevels: 8
 
 # ORBextractor.iniThFAST: 20
 # ORBextractor.minThFAST: 7
-ORBextractor.iniThFAST: 15 #default for KG
-ORBextractor.minThFAST: 4  #default for KG
+# ORBextractor.iniThFAST: 15 #default for KG
+# ORBextractor.minThFAST: 4  #default for KG
+ORBextractor.iniThFAST: 13
+ORBextractor.minThFAST: 2
 # ORBextractor.iniThFAST: 10
-# ORBextractor.minThFAST: 3
+
+# ORBextractor.minThFAST: 1
 
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters

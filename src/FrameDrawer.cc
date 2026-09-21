@@ -209,6 +209,8 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale) {
     }
   }
 
+  matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, mnTracked));
+
   cv::Mat imWithInfo;
   DrawTextInfo(im, state, imWithInfo);
 
