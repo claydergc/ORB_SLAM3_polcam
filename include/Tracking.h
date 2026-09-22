@@ -267,6 +267,7 @@ protected:
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
     ORBextractor* mpIniORBextractor;
+    ORBextractor* mpIniORBextractorPolcam;
     ORBextractor* mpORBextractorPolcam;
 
     //BoW

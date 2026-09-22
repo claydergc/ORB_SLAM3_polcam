@@ -400,6 +400,144 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
 
     mpMutexImu = new std::mutex();
 }
+//
+// Frame::Frame(const cv::Mat &imGray, const cv::Mat &imPolarized, const double &timeStamp, ORBextractor* extractor, ORBextractor* extractorPolcam, ORBVocabulary* voc, GeometricCamera* pCamera, cv::Mat &distCoef, const float &bf, const float &thDepth, Frame* pPrevF, const IMU::Calib &ImuCalib)
+//     :mpcpi(NULL),mpORBvocabulary(voc),mpORBextractorLeft(extractor), mpORBextractorCam1(extractorPolcam), mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
+//      mTimeStamp(timeStamp), mK(static_cast<Pinhole*>(pCamera)->toK()), mK_(static_cast<Pinhole*>(pCamera)->toK_()), mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
+//      mImuCalib(ImuCalib), mpImuPreintegrated(NULL),mpPrevFrame(pPrevF),mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbIsSet(false), mbImuPreintegrated(false), mpCamera(pCamera),
+//      mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
+// {
+//     // Frame ID
+//     mnId=nNextId++;
+
+//     // Scale Level Info
+//     mnScaleLevels = mpORBextractorLeft->GetLevels();
+//     mfScaleFactor = mpORBextractorLeft->GetScaleFactor();
+//     mfLogScaleFactor = log(mfScaleFactor);
+//     mvScaleFactors = mpORBextractorLeft->GetScaleFactors();
+//     mvInvScaleFactors = mpORBextractorLeft->GetInverseScaleFactors();
+//     mvLevelSigma2 = mpORBextractorLeft->GetScaleSigmaSquares();
+//     mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
+
+//     // ORB extraction
+// #ifdef REGISTER_TIMES
+//     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
+// #endif
+//     // ExtractORB(0,imGray,0,1000);
+//     thread threadMono(&Frame::ExtractORBPolcam,this,0,imGray,0,0);
+//     thread threadPolcam(&Frame::ExtractORBPolcam,this,1,imPolarized,0,0);
+//     threadMono.join();
+//     threadPolcam.join();
+
+// #ifdef REGISTER_TIMES
+//     std::chrono::steady_clock::time_point time_EndExtORB = std::chrono::steady_clock::now();
+
+//     mTimeORB_Ext = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(time_EndExtORB - time_StartExtORB).count();
+// #endif
+
+//     // mvKeysCam0 = mvKeys;
+//     // mDescriptorsCam0 = mDescriptors;
+//     mvKeysCam0 = mvKeys;
+//     mDescriptorsCam0 = mDescriptors;
+
+//     std::vector<cv::Mat> mDescriptorsCam1Vec;
+//     // computeFeatureOverlap(mvKeys, mvKeysPolcam, mvKeysPolcamNonOverlapped, mDescriptorsPolcam, mDescriptorsPolcamNonOverlappedVec, 4.0);
+//     // computeFeatureOverlap(mvKeys, mvKeysCam1Overlapped, mvKeysCam1, mDescriptorsCam1Overlapped, mDescriptorsCam1Vec, 5.0);
+//     computeFeatureOverlap(mvKeys, mvKeysCam1Overlapped, mvKeysCam1, mDescriptorsCam1Overlapped, mDescriptorsCam1Vec, 3.0);
+
+//     //Join mvKeys and mvKeysPolcamNonOverlapped
+//     if(!mDescriptorsCam1Vec.empty()) {
+//         std::vector<cv::KeyPoint> mvKeysJoined;
+//         mvKeysJoined = mvKeys;
+//         mvKeysJoined.insert(mvKeysJoined.end(), mvKeysCam1.begin(), mvKeysCam1.end());
+//         mvKeys = mvKeysJoined;
+
+//         //std::cout<<"mDescriptors: "<<mDescriptors.size()<<" "<<"mDescriptorsDiff: "<<mDescriptorsDiff.size()<<std::endl;
+
+//         //Join mDescriptors and mDescriptorsNonOverlapped
+
+//         cv::vconcat(mDescriptorsCam1Vec, mDescriptorsCam1);
+//         // Put all descriptors (mDescriptors, mDescriptorsCam1) in the same matrix mDescriptors.
+//         // This is to make it possible for ComputeDistinctiveDescriptors() tu run correctly
+//         cv::vconcat(mDescriptors, mDescriptorsCam1, mDescriptors);
+//     }
+
+
+//     // N = mvKeys.size();
+//     // N_Cam0 = N; //N_Cam0 need to be initilalized always because the SearchByProjection function are based on them
+//     // N_Cam1 = N + 1; //N_Cam1 need to be initilalized always because the SearchByProjection function are based on them
+
+
+//     N_Cam0 = mvKeysCam0.size();
+//     N_Cam1 = mvKeysCam1.size();
+//     N = N_Cam0 + N_Cam1;
+
+//     if(mvKeys.empty())
+//         return;
+
+//     UndistortKeyPoints();
+//     // UndistortKeyPointsCam(0);
+
+//     // Set no stereo information
+//     mvuRight = vector<float>(N,-1);
+//     mvDepth = vector<float>(N,-1);
+//     mnCloseMPs = 0;
+
+//     mvpMapPoints = vector<MapPoint*>(N,static_cast<MapPoint*>(NULL));
+
+//     mmProjectPoints.clear();// = map<long unsigned int, cv::Point2f>(N, static_cast<cv::Point2f>(NULL));
+//     mmMatchedInImage.clear();
+
+//     mvbOutlier = vector<bool>(N,false);
+
+//     // This is done only for the first Frame (or after a change in the calibration)
+//     if(mbInitialComputations)
+//     {
+//         ComputeImageBounds(imGray);
+
+//         mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/static_cast<float>(mnMaxX-mnMinX);
+//         mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/static_cast<float>(mnMaxY-mnMinY);
+
+//         fx = static_cast<Pinhole*>(mpCamera)->toK().at<float>(0,0);
+//         fy = static_cast<Pinhole*>(mpCamera)->toK().at<float>(1,1);
+//         cx = static_cast<Pinhole*>(mpCamera)->toK().at<float>(0,2);
+//         cy = static_cast<Pinhole*>(mpCamera)->toK().at<float>(1,2);
+//         invfx = 1.0f/fx;
+//         invfy = 1.0f/fy;
+
+//         mbInitialComputations=false;
+//     }
+
+
+//     mb = mbf/fx;
+
+//     //Set no stereo fisheye information
+//     Nleft = -1;
+//     Nright = -1;
+//     mvLeftToRightMatch = vector<int>(0);
+//     mvRightToLeftMatch = vector<int>(0);
+//     mvStereo3Dpoints = vector<Eigen::Vector3f>(0);
+//     monoLeft = -1;
+//     monoRight = -1;
+
+//     AssignFeaturesToGrid();
+//     // AssignFeaturesToGridCam(0);
+
+//     if(pPrevF)
+//     {
+//         if(pPrevF->HasVelocity())
+//         {
+//             SetVelocity(pPrevF->GetVelocity());
+//         }
+//     }
+//     else
+//     {
+//         mVw.setZero();
+//     }
+
+//     mpMutexImu = new std::mutex();
+// }
+
 
 //added by claydergc
 
