@@ -2616,10 +2616,14 @@ void Tracking::MonocularInitialization()
 
     if(!mbReadyToInitializate)
     {
+
+        // std::cout<<mCurrentFrame.mvKeys.size()<<", N_Cam0: "<<mCurrentFrame.N_Cam0<<", N_Cam1: "<<mCurrentFrame.N_Cam1<<std::endl;
+
         // Set Reference Frame
         if(mCurrentFrame.mvKeys.size()>100)
         {
 
+            // std::cout<<"Initializing with "<<mCurrentFrame.mvKeys.size()<<" keypoints"<<std::endl;
             mInitialFrame = Frame(mCurrentFrame);
             mLastFrame = Frame(mCurrentFrame);
             mvbPrevMatched.resize(mCurrentFrame.mvKeysUn.size());
@@ -2641,6 +2645,8 @@ void Tracking::MonocularInitialization()
 
             mbReadyToInitializate = true;
 
+            // std::cout<<"mbReadyToInitializate: "<<mbReadyToInitializate<<std::endl;
+
             return;
         }
     }
@@ -2649,6 +2655,7 @@ void Tracking::MonocularInitialization()
         if (((int)mCurrentFrame.mvKeys.size()<=100)||((mSensor == System::IMU_MONOCULAR)&&(mLastFrame.mTimeStamp-mInitialFrame.mTimeStamp>1.0)))
         {
             mbReadyToInitializate = false;
+            // std::cout<<"mbReadyToInitializate 1: "<<mbReadyToInitializate<<std::endl;
 
             return;
         }
@@ -2657,20 +2664,29 @@ void Tracking::MonocularInitialization()
         ORBmatcher matcher(0.9,true);
         int nmatches = matcher.SearchForInitialization(mInitialFrame,mCurrentFrame,mvbPrevMatched,mvIniMatches,100);
 
-        //std::cout<<"ini nmatches: "<<nmatches<<std::endl;
+        // std::cout<<"ini nmatches: "<<nmatches<<std::endl;
+        //
+        // std::cout<<mInitialFrame.mvKeysUn.size()<<", mvIniMatchesSize: "<<mvIniMatches.size()<<std::endl;
+        // std::cout<<mInitialFrame.mvKeysUn.size()<<", N_Cam0: "<<mInitialFrame.N_Cam0<<", N_Cam1: "<<mInitialFrame.N_Cam1<<std::endl;
 
         // Check if there are enough correspondences
         if(nmatches<100)
         {
             mbReadyToInitializate = false;
+            // std::cout<<"mbReadyToInitializate 2: "<<mbReadyToInitializate<<std::endl;
             return;
         }
+
+        // std::cout<<"ini nmatches: "<<nmatches<<std::endl;
 
         Sophus::SE3f Tcw;
         vector<bool> vbTriangulated; // Triangulated Correspondences (mvIniMatches)
 
+        // std::cout<<mCurrentFrame.mvKeys.size()<<", N_Cam0: "<<mCurrentFrame.N_Cam0<<", N_Cam1: "<<mCurrentFrame.N_Cam1<<std::endl;
+
         if(mpCamera->ReconstructWithTwoViews(mInitialFrame.mvKeysUn,mCurrentFrame.mvKeysUn,mvIniMatches,Tcw,mvIniP3D,vbTriangulated))
         {
+            // std::cout<<"ReconstructWithTwoViews succeeded"<<std::endl;
             for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++)
             {
                 if(mvIniMatches[i]>=0 && !vbTriangulated[i])

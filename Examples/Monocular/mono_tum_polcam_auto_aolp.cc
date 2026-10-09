@@ -244,8 +244,8 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM01, true);
-    // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, true);
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, false);
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, true);
+    // ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, ORB_SLAM3::Constants::POLCAM0, false);
     float imageScale = SLAM.GetImageScale();
 
     // Vector for tracking time statistics
@@ -279,11 +279,16 @@ int main(int argc, char **argv)
     double dolp_mean = 0;
 
     // int theta0_curr = 155;
-    double theta0_curr = 900 * M_PI / 180.0;
+    // double theta0_curr = 900 * M_PI / 180.0;
+    // double theta0_curr = 359 * M_PI / 180.0;
+    // double theta0_curr = 240 * M_PI / 180.0; //20260803
+    double theta0_curr = 222 * M_PI / 180.0; //20260128
     double theta0_prev = theta0_curr;
     double theta0_target = 0;
     // int theta1_curr = 98;
-    double theta1_curr = 900 * M_PI / 180.0;
+    // double theta1_curr = 900 * M_PI / 180.0;
+    // double theta1_curr = 319 * M_PI / 180.0; //20260803
+    double theta1_curr = 278 * M_PI / 180.0; //20260128
 
     double theta_3std_left;
     double theta_3std_right;
@@ -345,13 +350,19 @@ int main(int argc, char **argv)
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.3);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.4);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.7);
+
                     theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, r, phi_circmax);
+
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 0.5); //all the sequences was working with this value and the exponential function
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 1.0);
                     // theta0_curr_aux = f(aolp_mean_curr, theta_3std_right, 1.5);
                     // theta0_curr_aux = 90.0*M_PI/180.0;
 
+                    // theta0_curr_aux = aolp_mean_curr; // should I use only aolp_mean to maximize the number of features extracted?
                     theta1_curr_aux = aolp_mean_curr + (M_PI/2.0);
+
+                    // theta0_curr_aux = 0;
+                    // theta1_curr_aux = (M_PI/2.0);
 
                 }
             }
@@ -369,7 +380,7 @@ int main(int argc, char **argv)
                 // std::cout<<"Smooth transition"<<std::endl;
             }
 
-            std::cout<<"dolp_mean: "<<dolp_mean<<" aolp_mean: "<<aolp_mean_curr * 180.0 / M_PI<<" theta_3std_right: "<<theta_3std_right * 180.0 / M_PI<<" theta0_prev: "<<theta0_prev * 180.0 / M_PI<<" theta0: "<<theta0_curr_aux * 180.0 / M_PI<<" theta1: "<<theta1_curr_aux * 180.0 / M_PI<<std::endl;
+            // std::cout<<"dolp_mean: "<<dolp_mean<<" aolp_mean: "<<aolp_mean_curr * 180.0 / M_PI<<" theta_3std_right: "<<theta_3std_right * 180.0 / M_PI<<" theta0_prev: "<<theta0_prev * 180.0 / M_PI<<" theta0: "<<theta0_curr_aux * 180.0 / M_PI<<" theta1: "<<theta1_curr_aux * 180.0 / M_PI<<std::endl;
 
             theta0_curr = theta0_curr_aux;
             theta1_curr = theta1_curr_aux;
@@ -419,8 +430,8 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        cv::resize(imCam0, imCam0, cv::Size(606, 507), cv::INTER_AREA);
-        cv::resize(imCam1, imCam1, cv::Size(606, 507), cv::INTER_AREA);
+        // cv::resize(imCam0, imCam0, cv::Size(606, 507), cv::INTER_AREA);
+        // cv::resize(imCam1, imCam1, cv::Size(606, 507), cv::INTER_AREA);
 
         Sophus::SE3f Tcw = SLAM.TrackMonocularPolcam(imCam0,imCam1,tframe);
         // Sophus::SE3f Tcw = SLAM.TrackMonocularPolcam(imCam1,imCam0,tframe);
@@ -516,7 +527,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
     string s0;
     getline(f,s0);
     getline(f,s0);
-    // getline(f,s0);
+    getline(f,s0);
 
     while(!f.eof())
     {

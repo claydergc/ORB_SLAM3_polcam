@@ -669,6 +669,8 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2,
   int nmatches = 0;
   vnMatches12 = vector<int>(F1.mvKeysUn.size(), -1);
 
+  // std::cout<<F1.mvKeysUn.size()<<", mvIniMatchesSize: "<<vnMatches12.size()<<std::endl;
+
   vector<int> rotHist[HISTO_LENGTH];
   for (int i = 0; i < HISTO_LENGTH; i++)
     rotHist[i].reserve(500);
@@ -1225,7 +1227,7 @@ int ORBmatcher::SearchForTriangulationInEachCam(
 
         // If there is already a MapPoint skip. Only continue if pMP1 is null.
         // if (pMP1) {
-        if (pMP1 || idx1>=pKF1->N_Cam0) {
+        if (pMP1 || idx1>=pKF1->N_Cam0) { //added by claydergc
           continue;
         }
 
@@ -1383,7 +1385,7 @@ int ORBmatcher::SearchForTriangulationInEachCam(
 
         // If there is already a MapPoint skip. Only continue if pMP1 is null.
         // if (pMP1) {
-        if (pMP1 || idx1<pKF1->N_Cam0) {
+        if (pMP1 || idx1<pKF1->N_Cam0) { //added by claydergc
           continue;
         }
 

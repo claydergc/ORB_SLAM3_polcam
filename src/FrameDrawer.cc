@@ -209,7 +209,7 @@ cv::Mat FrameDrawer::DrawFrame(float imageScale) {
     }
   }
 
-  matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, mnTracked));
+  // matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, mnTracked));
 
   cv::Mat imWithInfo;
   DrawTextInfo(im, state, imWithInfo);
@@ -369,6 +369,9 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText) {
 }
 
 void FrameDrawer::Update(Tracking *pTracker) {
+
+  // std::cout<<"Update"<<std::endl;
+
   unique_lock<mutex> lock(mMutex);
   pTracker->mImGray.copyTo(mIm);
   mvCurrentKeys = pTracker->mCurrentFrame.mvKeys;
@@ -406,6 +409,8 @@ void FrameDrawer::Update(Tracking *pTracker) {
   mvpOutlierMPs.clear();
   mvpOutlierMPs.reserve(N);
 
+  uint16_t mnTracked = 0;
+
   if (pTracker->mLastProcessedState == Tracking::NOT_INITIALIZED) {
     mvIniKeys = pTracker->mInitialFrame.mvKeys;
     mvIniMatches = pTracker->mvIniMatches;
@@ -414,8 +419,10 @@ void FrameDrawer::Update(Tracking *pTracker) {
       MapPoint *pMP = pTracker->mCurrentFrame.mvpMapPoints[i];
       if (pMP) {
         if (!pTracker->mCurrentFrame.mvbOutlier[i]) {
-          if (pMP->Observations() > 0)
+          if (pMP->Observations() > 0) {
             mvbMap[i] = true;
+            mnTracked++; //added by claydergc to count tracked keypoints when visualization is disabled
+          }
           else
             mvbVO[i] = true;
 
@@ -426,6 +433,8 @@ void FrameDrawer::Update(Tracking *pTracker) {
         }
       }
     }
+
+    matchedKeypointsPerFrame.push_back(std::make_pair(mCurrentFrame.mTimeStamp, mnTracked)); //added by claydergc to count tracked keypoints when visualization is disabled
   }
   mState = static_cast<int>(pTracker->mLastProcessedState);
 }

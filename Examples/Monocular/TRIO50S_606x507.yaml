@@ -69,12 +69,12 @@ ORBextractor.nLevels: 8
 # Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
 # Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
 # You can lower these values if your images have low contrast
-# ORBextractor.iniThFAST: 20
-# ORBextractor.minThFAST: 7
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
 # ORBextractor.iniThFAST: 15 # works for KG
 # ORBextractor.minThFAST: 4 # works for KG
-ORBextractor.iniThFAST: 10 # works for KG
-ORBextractor.minThFAST: 3 # works for KG
+# ORBextractor.iniThFAST: 10 # works for KG
+# ORBextractor.minThFAST: 3 # works for KG
 # ORBextractor.minThFAST: 2 # works for KG
 # ORBextractor.iniThFAST: 12 #fail
 # ORBextractor.minThFAST: 2 #fail

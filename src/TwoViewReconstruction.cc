@@ -58,6 +58,8 @@ namespace ORB_SLAM3
             {
                 mvMatches12.push_back(make_pair(i,vMatches12[i]));
                 mvbMatched1[i]=true;
+
+                // std::cout<<i<<", "<<vMatches12[i]<<std::endl;
             }
             else
                 mvbMatched1[i]=false;
